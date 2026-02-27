@@ -160,3 +160,34 @@ exports.checkMyDrugs = asyncHandler(async (req, res) => {
         });
     }
 });
+
+// ─── POST /api/v1/patients/voice-to-note ────────────────────────────
+exports.voiceToNote = asyncHandler(async (req, res) => {
+    const { transcript, language = 'en' } = req.body;
+
+    if (!transcript || !transcript.trim()) {
+        return res.status(400).json({
+            success: false,
+            message: 'transcript is required',
+        });
+    }
+
+    try {
+        const aiRes = await axios.post(
+            `${AI_URL}/voice-to-note`,
+            { transcript, language },
+            { timeout: 60000 },
+        );
+
+        res.json({
+            success: true,
+            data: aiRes.data,
+        });
+    } catch (err) {
+        console.error('Voice-to-note failed:', err.message);
+        res.status(502).json({
+            success: false,
+            message: 'AI service unavailable. Please try again or type your symptoms instead.',
+        });
+    }
+});

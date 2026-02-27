@@ -7,6 +7,7 @@ import ResultsPage from './components/ResultsPage';
 import HistoryPage from './components/HistoryPage';
 import DoctorDashboard from './components/DoctorDashboard';
 import DoctorSessionReview from './components/DoctorSessionReview';
+import VoiceNoteChecker from './components/VoiceNoteChecker';
 
 // ─── Placeholder pages ───────────────────────────────────────────
 const Dashboard = () => (
@@ -56,6 +57,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/symptoms" element={<SymptomChecker />} />
+                    <Route path="/symptoms/voice" element={<VoiceNoteChecker />} />
                     <Route path="/results/:id" element={<ResultsPage />} />
                     <Route path="/drugs" element={<DrugInteractionChecker />} />
                     <Route path="/history" element={<HistoryPage />} />

@@ -6,6 +6,7 @@ const {
     getTimeline,
     getStats,
     checkMyDrugs,
+    voiceToNote,
 } = require('../controllers/patientController');
 const { requireAuth, requireRole } = require('../middleware/authMiddleware');
 
@@ -17,5 +18,6 @@ router.put('/me', updateProfile);
 router.get('/me/timeline', getTimeline);
 router.get('/me/stats', getStats);
 router.post('/me/check-drugs', checkMyDrugs);
+router.post('/me/voice-to-note', voiceToNote);
 
 module.exports = router;

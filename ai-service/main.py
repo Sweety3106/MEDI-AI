@@ -67,6 +67,10 @@ class SoapNoteRequest(BaseModel):
 class DrugInteractionRequest(BaseModel):
     medications: List[str]
 
+class VoiceToNoteRequest(BaseModel):
+    transcript: str
+    language: str = "en"  # "en" or "hi"
+
 # =========================
 # HELPER FUNCTIONS
 # =========================
@@ -525,6 +529,113 @@ Analyze all pairwise interactions for these {len(medications)} medications.
     except Exception as e:
         print(f"Drug interaction check failed: {e}")
         return fallback_drug_interactions(medications)
+
+
+EMERGENCY_PHRASES = [
+    "crushing chest pain",
+    "can't breathe",
+    "cannot breathe",
+    "short of breath",
+    "shortness of breath",
+    "severe difficulty breathing",
+    "difficulty breathing",
+    "slurred speech",
+    "sudden weakness",
+    "one side of the body",
+    "loss of consciousness",
+    "fainted",
+    "unresponsive",
+    "blue lips",
+    "blue face",
+    "seizure",
+    "convulsion",
+]
+
+
+@app.post("/voice-to-note")
+def voice_to_note(req: VoiceToNoteRequest):
+    """
+    End-to-end pipeline for voice transcript:
+    - Translate (if needed)
+    - Extract symptoms
+    - Generate structured diagnosis + SOAP note
+    - Detect emergency language
+    """
+    if not req.transcript or not req.transcript.strip():
+        raise HTTPException(status_code=400, detail="transcript is required")
+
+    transcript = req.transcript.strip()
+    if req.language not in ["en", "hi"]:
+        raise HTTPException(status_code=400, detail="Language must be 'en' or 'hi'")
+
+    translated = translate_to_english(transcript, req.language)
+
+    # 1) Extract symptoms (reuse GPT + fallback logic)
+    try:
+        extraction = call_gpt_extraction(translated)
+    except Exception as e:
+        print(f"Voice extraction via GPT failed: {e}")
+        extraction = fallback_extraction(translated)
+
+    symptoms = extraction.get("extractedSymptoms") or []
+
+    # 2) Simple risk scoring aligned with backend logic
+    risk_score = 0
+    risk_level = "low"
+    if symptoms:
+        avg_severity = sum((s.get("severity") or 5) for s in symptoms) / len(symptoms)
+        risk_score = min(100, round(avg_severity * 10))
+        if risk_score >= 70:
+            risk_level = "critical"
+        elif risk_score >= 50:
+            risk_level = "high"
+        elif risk_score >= 30:
+            risk_level = "medium"
+
+    # 3) Diagnosis generation (with fallback)
+    diag_req = DiagnosisRequest(
+        extractedSymptoms=symptoms,
+        riskScore=risk_score,
+        patientAge=extraction.get("patientAge") or None,
+        patientGender=extraction.get("patientGender") or None,
+        chronicConditions=[],
+    )
+    diagnosis_result = generate_diagnosis(diag_req)
+
+    # 4) SOAP note generation (with fallback)
+    patient_profile = {
+        "age": extraction.get("patientAge"),
+        "gender": extraction.get("patientGender"),
+        "chronicConditions": [],
+        "medications": [],
+    }
+    soap_req = SoapNoteRequest(
+        patientProfile=patient_profile,
+        rawInput=translated,
+        extractedSymptoms=symptoms,
+        diagnosisPredictions=diagnosis_result,
+        riskScore=float(risk_score),
+    )
+    soap_result = generate_soap_note(soap_req)
+
+    # 5) Emergency language detection
+    lower_text = translated.lower()
+    triggers = [p for p in EMERGENCY_PHRASES if p in lower_text]
+    emergency = {
+        "detected": len(triggers) > 0
+            or ("chest pain" in lower_text and "severe" in lower_text),
+        "triggers": triggers,
+    }
+
+    return {
+        "extractedSymptoms": symptoms,
+        "vitalMentions": extraction.get("vitalMentions") or {},
+        "riskScore": risk_score,
+        "riskLevel": risk_level,
+        "diagnosis": diagnosis_result,
+        "soapNote": soap_result,
+        "emergency": emergency,
+    }
 
 if __name__ == "__main__":
     import uvicorn

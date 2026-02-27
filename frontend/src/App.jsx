@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import DrugInteractionChecker from './components/DrugInteractionChecker';
 import SymptomChecker from './components/SymptomChecker';
 import ResultsPage from './components/ResultsPage';
+import HistoryPage from './components/HistoryPage';
 
 // ─── Placeholder pages ───────────────────────────────────────────
 const Dashboard = () => (
@@ -54,7 +55,7 @@ function App() {
                     <Route path="/symptoms" element={<SymptomChecker />} />
                     <Route path="/results/:id" element={<ResultsPage />} />
                     <Route path="/drugs" element={<DrugInteractionChecker />} />
-                    <Route path="/history" element={<Placeholder title="My History" icon="📜" />} />
+                    <Route path="/history" element={<HistoryPage />} />
                     <Route path="/profile" element={<Placeholder title="User Profile" icon="👤" />} />
 
                     {/* Doctor Routes */}

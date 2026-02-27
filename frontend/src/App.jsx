@@ -6,6 +6,7 @@ import SymptomChecker from './components/SymptomChecker';
 import ResultsPage from './components/ResultsPage';
 import HistoryPage from './components/HistoryPage';
 import DoctorDashboard from './components/DoctorDashboard';
+import DoctorSessionReview from './components/DoctorSessionReview';
 
 // ─── Placeholder pages ───────────────────────────────────────────
 const Dashboard = () => (
@@ -63,6 +64,7 @@ function App() {
                     {/* Doctor Routes */}
                     <Route path="/doctor" element={<DoctorDashboard user={user} />} />
                     <Route path="/doctor/dashboard" element={<DoctorDashboard user={user} />} />
+                    <Route path="/doctor/sessions/:sessionId" element={<DoctorSessionReview user={user} />} />
                     <Route path="/doctor/alerts" element={<Placeholder title="Critical Alerts" icon="🚨" />} />
                     <Route path="/doctor/patients" element={<Placeholder title="Patient Management" icon="👥" />} />
                     <Route path="/doctor/review" element={<Placeholder title="Clinical Review" icon="📄" />} />

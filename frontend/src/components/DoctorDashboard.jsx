@@ -344,7 +344,7 @@ const DoctorDashboard = ({ user }) => {
                                     <div className="flex flex-col items-end gap-2">
                                         <button
                                             type="button"
-                                            onClick={() => navigate(`/results/${alert.sessionId}`)}
+                                            onClick={() => navigate(`/doctor/sessions/${alert.sessionId}`)}
                                             className="inline-flex items-center gap-2 px-3 py-2 rounded-2xl bg-slate-900 text-white text-xs font-bold shadow-sm hover:bg-slate-800"
                                         >
                                             Review now
@@ -540,7 +540,7 @@ const DoctorDashboard = ({ user }) => {
                                                 <button
                                                     type="button"
                                                     onClick={() =>
-                                                        navigate(`/results/${s.sessionId}`)
+                                                        navigate(`/doctor/sessions/${s.sessionId}`)
                                                     }
                                                     className="inline-flex items-center gap-1 px-3 py-1.5 rounded-2xl bg-teal-600 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-teal-700"
                                                 >

@@ -5,6 +5,7 @@ import DrugInteractionChecker from './components/DrugInteractionChecker';
 import SymptomChecker from './components/SymptomChecker';
 import ResultsPage from './components/ResultsPage';
 import HistoryPage from './components/HistoryPage';
+import DoctorDashboard from './components/DoctorDashboard';
 
 // ─── Placeholder pages ───────────────────────────────────────────
 const Dashboard = () => (
@@ -45,7 +46,8 @@ const Placeholder = ({ title, icon }) => (
 
 function App() {
     // Current user context
-    const user = { name: 'MediAI User', role: 'patient' };
+    // For now this is hard-coded; in a real app this would come from auth
+    const user = { name: 'Dr. MediAI', role: 'doctor' };
 
     return (
         <Router>
@@ -59,7 +61,8 @@ function App() {
                     <Route path="/profile" element={<Placeholder title="User Profile" icon="👤" />} />
 
                     {/* Doctor Routes */}
-                    <Route path="/doctor" element={<Placeholder title="Doctor Dashboard" icon="🏥" />} />
+                    <Route path="/doctor" element={<DoctorDashboard user={user} />} />
+                    <Route path="/doctor/dashboard" element={<DoctorDashboard user={user} />} />
                     <Route path="/doctor/alerts" element={<Placeholder title="Critical Alerts" icon="🚨" />} />
                     <Route path="/doctor/patients" element={<Placeholder title="Patient Management" icon="👥" />} />
                     <Route path="/doctor/review" element={<Placeholder title="Clinical Review" icon="📄" />} />

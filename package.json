@@ -1,0 +1,16 @@
+{
+  "name": "mediai-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "ai-service"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:ai": "cd ai-service && venv/Scripts/activate && uvicorn main:app --reload",
+    "install:all": "npm install && cd ai-service && python -m venv venv && venv/Scripts/activate && pip install -r requirements.txt"
+  }
+}

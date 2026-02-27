@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+openai
+spacy
+python-dotenv
+pydantic
+deep-translator
+fpdf2
+httpx
